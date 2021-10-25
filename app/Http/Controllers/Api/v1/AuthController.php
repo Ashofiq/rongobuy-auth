@@ -140,7 +140,7 @@ class AuthController extends Controller
         }
 
         // check user valid type
-        $type_array =array(null, User::ADMIN, User::CUSTOMER);
+        $type_array = array(null, User::ADMIN, User::CUSTOMER);
         if(!array_search($request->type, $type_array)){
             return $this->failure('Type not match, please enter valid type');
         }
