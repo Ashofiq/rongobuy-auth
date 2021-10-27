@@ -13,10 +13,11 @@ trait RespondsWithHttpStatus
         ], $status);
     }
 
-    protected function failure($message, $status = 200)
+    protected function failure($message, $data = [], $status = 200)
     {
         return response([
             'success' => false,
+            'data' => $data,
             'message' => $message,
         ], $status);
     }

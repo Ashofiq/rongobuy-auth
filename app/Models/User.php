@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
+use Helper;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -64,8 +64,17 @@ class User extends Authenticatable implements JWTSubject
 
 
     public function reg($data)
-    {
-        return static::create($data);
+    {   
+        $user = new User();
+        $user->name = $data->name;
+        $user->mobile = $data->mobile;
+        $user->password = Helper::makeHash($data->password);
+
+        if($user->save()){
+            return $user;
+        }
+
+        return false;
     }
     
     public function getAll()

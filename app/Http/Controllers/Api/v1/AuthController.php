@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserInterface;
 use App\Repositories\User\UserTypes\UserTypeInterface;
-use Hash;
-use App\Helper\RespondsWithHttpStatus;
-use Helper;
 use App\Models\User;
 use App\Models\UserTypes\UserTypes;
-
+use App\Helper\RespondsWithHttpStatus;
+use Helper;
+use Validator;
+use Hash;
 /**
  * Class AuthController
  *
@@ -35,11 +35,11 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'reg', 'me']]);
     }
 
-     /** @OA\Info(title="DoyalBaba ecommerce", version="1.0") */
+     /** @OA\Info(title="RongoBuy ecommerce", version="1.0") */
 
 
     /**
-     * Doyalbaba login
+     * RongoBuy login
      * 
      * @OA\Post(
      *     path="/api/auth/v1/login",
@@ -52,9 +52,9 @@ class AuthController extends Controller
     *    required=true,
     *    description="Pass user credentials",
     *    @OA\JsonContent(
-    *       required={"email","password"},
-    *       @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
-    *       @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
+    *       required={"mobile","password"},
+    *       @OA\Property(property="mobile", type="string", example="01767000000"),
+    *       @OA\Property(property="password", type="string", format="password", example="12345678"),
     *    ),
     * ),
      *   
@@ -63,17 +63,17 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
+        $credentials = request(['mobile', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
-            return $this->failure("Wrong email Or password", 401);
+            return $this->failure("Wrong mobile Or password", 401);
         }
 
         return $this->success('success', $this->respondWithToken($token));
     }
 
     /**
-     * Doyalbaba Registration
+     * RongoBuy Registration
      * 
      * @OA\Post(
      *     path="/api/auth/v1/registration",
@@ -82,51 +82,28 @@ class AuthController extends Controller
      *         response=201,
      *         description="success"
      *     ),
-     *   @OA\Parameter(
-     *         name="name",
-     *         in="query",
-     *         description="Enter Name",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
-     *     ),
-     *      @OA\Parameter(
-     *         name="email",
-     *         in="query",
-     *         description="Enter Email",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
-     *     ),
-     *      @OA\Parameter(
-     *         name="password",
-     *         in="query",
-     *         description="Enter Password",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="string"
-     *         )
-     *     ),
-     *      @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Enter user type",
-     *         required=true,
-     *         @OA\Schema(
+    * @OA\RequestBody(
+    *    required=true,
+    *    description="Pass user credentials",
+    *    @OA\JsonContent(
+    *       required={"email","password"},
+    *       @OA\Property(property="name", type="string", example="name"),
+    *       @OA\Property(property="mobile", type="string", example="01767000000"),
+    *       @OA\Property(property="password", type="string", format="password", example="12345678"),
+    *       @OA\Property(property="type", type="string", @OA\Schema(
      *             type="array",
      *             default="customer",
      *             @OA\Items(
      *                 type="string",
      *                 enum = {"customer", "vendor", "admin"},
      *             )
-     *         )
-     *     ),
+     *         )),
+    *    ),
+    * ),
+     *   
      *     
      * )
      */
-
     public function reg(Request $request)
     {   
         $validator = Validator::make($request->all(),[
@@ -176,10 +153,19 @@ class AuthController extends Controller
         return $this->userType->addType($userTypeData);
     }
 
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     /**
+     * RongoBuy User
+     * 
+     * @OA\Get(
+     *     path="/api/v1/me",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success"
+     *     ),
+     *   security={{"bearer_token":{}}}
+     *     
+     * )
      */
     public function me()
     {
@@ -217,10 +203,10 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token)
     {
-        return response()->json([
+        return array(
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+        );
     }
 }

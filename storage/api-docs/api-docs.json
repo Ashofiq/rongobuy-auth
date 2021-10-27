@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "DoyalBaba ecommerce",
+        "title": "RongoBuy ecommerce",
         "version": "1.0"
     },
     "paths": {
@@ -10,7 +10,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Doyalbaba login",
+                "summary": "RongoBuy login",
                 "operationId": "69b4b7da857a88e2270a0a77507bd653",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -19,19 +19,18 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "email",
+                                    "mobile",
                                     "password"
                                 ],
                                 "properties": {
-                                    "email": {
+                                    "mobile": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "user1@mail.com"
+                                        "example": "01767000000"
                                     },
                                     "password": {
                                         "type": "string",
                                         "format": "password",
-                                        "example": "PassWord12345"
+                                        "example": "12345678"
                                     }
                                 },
                                 "type": "object"
@@ -51,55 +50,41 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Doyalbaba Registration",
+                "summary": "RongoBuy Registration",
                 "operationId": "deb365e13ee0cc9eb6d26769a377e94a",
-                "parameters": [
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "Enter Name",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "email",
-                        "in": "query",
-                        "description": "Enter Email",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "password",
-                        "in": "query",
-                        "description": "Enter Password",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "description": "Enter user type",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [
-                                    "customer",
-                                    "vendor",
-                                    "admin"
-                                ]
-                            },
-                            "default": "customer"
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "name"
+                                    },
+                                    "mobile": {
+                                        "type": "string",
+                                        "example": "01767000000"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "12345678"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
-                ],
+                },
                 "responses": {
                     "201": {
                         "description": "success"
@@ -107,32 +92,13 @@
                 }
             }
         },
-        "/api/v1/all-user": {
+        "/api/v1/me": {
             "get": {
                 "tags": [
-                    "User"
+                    "Auth"
                 ],
-                "summary": "Doyalbaba User",
-                "operationId": "614d41faae18e0d75a6894f7ad3cd59c",
-                "responses": {
-                    "201": {
-                        "description": "success"
-                    }
-                },
-                "security": [
-                    {
-                        "bearer_token": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/helper": {
-            "get": {
-                "tags": [
-                    "help"
-                ],
-                "summary": "Doyalbaba User",
-                "operationId": "6044d3ac8179afc654e351f70ee0ff92",
+                "summary": "RongoBuy User",
+                "operationId": "356e7d100be5b721bce5b2f7d8dfdc77",
                 "responses": {
                     "201": {
                         "description": "success"

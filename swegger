@@ -1,0 +1,54 @@
+/**
+     * RongoBuy Registration
+     * 
+     * @OA\Post(
+     *     path="/api/auth/v1/registration",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success"
+     *     ),
+     *   @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Enter Name",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="mobile",
+     *         in="query",
+     *         description="Enter mobile",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="password",
+     *         in="query",
+     *         description="Enter Password",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="type",
+     *         in="query",
+     *         description="Enter user type",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="array",
+     *             default="customer",
+     *             @OA\Items(
+     *                 type="string",
+     *                 enum = {"customer", "vendor", "admin"},
+     *             )
+     *         )
+     *     ),
+     *     
+     * )
+     */

@@ -22,20 +22,7 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    /**
-     * Doyalbaba User
-     * 
-     * @OA\Get(
-     *     path="/api/v1/all-user",
-     *     tags={"User"},
-     *     @OA\Response(
-     *         response=201,
-     *         description="success"
-     *     ),
-     *   security={{"bearer_token":{}}}
-     *     
-     * )
-     */
+   
     public function allUser(Request $request){
         $final =$this->user->getAll();
         if($final){
@@ -45,20 +32,8 @@ class UserController extends Controller
         return $this->failure('message');
 
     }
-    /**
-     * Doyalbaba User
-     * 
-     * @OA\Get(
-     *     path="/api/v1/helper",
-     *     tags={"help"},
-     *     @OA\Response(
-     *         response=201,
-     *         description="success"
-     *     ),
-     *   security={{"bearer_token":{}}}
-     *     
-     * )
-     */
+    
+    
     public function helper(Request $request){
         return $this->success('success', Helper::add());
     }
