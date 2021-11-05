@@ -23,6 +23,9 @@ Route::group([
 
 ], function ($router) {
     
+    Route::post('send-otp', 'AuthController@sendOtp')->name('sendOtp')->withoutMiddleware([UserGuard::class]);
+    Route::post('check-otp', 'AuthController@checkOtp')->name('checkOtp')->withoutMiddleware([UserGuard::class]);
+
     Route::post('registration', 'AuthController@reg')->name('reg')->withoutMiddleware([UserGuard::class]);
     Route::post('login', 'AuthController@login')->withoutMiddleware([UserGuard::class]);
     Route::post('logout', 'AuthController@logout')->withoutMiddleware([UserGuard::class]);

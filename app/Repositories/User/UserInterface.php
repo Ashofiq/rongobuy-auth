@@ -16,4 +16,6 @@ interface UserInterface {
     public function checkUserWithMobile($mobile);
 
     public function delete($id);
+
+    public function userIdByMobile($mobile);
 }

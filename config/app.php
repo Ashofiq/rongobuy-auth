@@ -176,7 +176,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         L5Swagger\L5SwaggerServiceProvider::class,
         App\Repositories\User\UserRepoServiceProvide::class,
-        App\Repositories\User\UserTypes\UserTypeRepoServiceProvide::class
+        App\Repositories\User\UserTypes\UserTypeRepoServiceProvide::class,
+        App\Repositories\PendingLogin\PendingLoginServiceProvider::class
     ],
 
     /*

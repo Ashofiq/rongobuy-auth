@@ -37,4 +37,9 @@ class UserRepository implements UserInterface
     public function delete($id){
         return $this->user->deleteUser($id);
     }
+
+
+    public function userIdByMobile($mobile){
+        return $this->user->userIdByMobile($mobile);
+    }
 }

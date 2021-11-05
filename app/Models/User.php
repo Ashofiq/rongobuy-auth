@@ -114,4 +114,14 @@ class User extends Authenticatable implements JWTSubject
         return static::find($id)->delete();
     }
 
+    public function userIdByMobile($mobile){
+        $user = static::where('mobile', $mobile)->first();
+
+        if($user != null){
+            return $user->id;
+        }
+
+        return false;
+    }
+
 }

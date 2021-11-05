@@ -5,13 +5,13 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/auth/v1/login": {
+        "/api/auth/v1/send-otp": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "RongoBuy login",
-                "operationId": "69b4b7da857a88e2270a0a77507bd653",
+                "summary": "RongoBuy Send OTP",
+                "operationId": "9ce15c9be69b401459d744718dd62d5d",
                 "requestBody": {
                     "description": "Pass user credentials",
                     "required": true,
@@ -19,18 +19,12 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "mobile",
-                                    "password"
+                                    "mobile"
                                 ],
                                 "properties": {
                                     "mobile": {
                                         "type": "string",
                                         "example": "01767000000"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "12345678"
                                     }
                                 },
                                 "type": "object"
@@ -45,39 +39,31 @@
                 }
             }
         },
-        "/api/auth/v1/registration": {
+        "/api/auth/v1/check-otp": {
             "post": {
                 "tags": [
                     "Auth"
                 ],
-                "summary": "RongoBuy Registration",
-                "operationId": "deb365e13ee0cc9eb6d26769a377e94a",
+                "summary": "RongoBuy Check OTP",
+                "operationId": "5bb996a7d43b1ec13082135621d90eb3",
                 "requestBody": {
-                    "description": "Pass user credentials",
+                    "description": "Check OTP",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "email",
-                                    "password"
+                                    "mobile",
+                                    "otp"
                                 ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "name"
-                                    },
                                     "mobile": {
                                         "type": "string",
                                         "example": "01767000000"
                                     },
-                                    "password": {
+                                    "otp": {
                                         "type": "string",
-                                        "format": "password",
-                                        "example": "12345678"
-                                    },
-                                    "type": {
-                                        "type": "string"
+                                        "example": "111111"
                                     }
                                 },
                                 "type": "object"

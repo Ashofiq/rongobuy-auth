@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\User\UserInterface;
 use App\Repositories\User\UserTypes\UserTypeInterface;
-use App\Models\User;
+use App\Repositories\PendingLogin\PendingLoginInterface;
 use App\Models\UserTypes\UserTypes;
 use App\Helper\RespondsWithHttpStatus;
 use Helper;
@@ -22,27 +22,26 @@ class AuthController extends Controller
 {   
     use RespondsWithHttpStatus;
     private $user;
-    private $userType;
+    private $userType, $pendingLogin;
     /**
      * Create a new AuthController instance.
      *
      * @return void
      */
-    public function __construct(UserInterface $user, UserTypeInterface $userType)
+    public function __construct(UserInterface $user, UserTypeInterface $userType, PendingLoginInterface $pendingLogin)
     {   
         $this->user = $user;
         $this->userType = $userType;
-        $this->middleware('auth:api', ['except' => ['login', 'reg', 'me']]);
+        $this->pendingLogin = $pendingLogin;
+        $this->middleware('auth:api', ['except' => ['login', 'reg', 'me', 'sendOtp', 'checkOtp']]);
     }
-
-     /** @OA\Info(title="RongoBuy ecommerce", version="1.0") */
 
 
     /**
-     * RongoBuy login
+     * RongoBuy Send OTP
      * 
      * @OA\Post(
-     *     path="/api/auth/v1/login",
+     *     path="/api/auth/v1/send-otp",
      *     tags={"Auth"},
      *     @OA\Response(
      *         response=201,
@@ -52,15 +51,93 @@ class AuthController extends Controller
     *    required=true,
     *    description="Pass user credentials",
     *    @OA\JsonContent(
-    *       required={"mobile","password"},
+    *       required={"mobile"},
     *       @OA\Property(property="mobile", type="string", example="01767000000"),
-    *       @OA\Property(property="password", type="string", format="password", example="12345678"),
     *    ),
     * ),
      *   
      *     
      * )
      */
+    public function sendOtp(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'mobile' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->failure(Helper::VALIDATOR_FAIL_MESSAGE, Helper::validateErrorMsg($validator->errors()));
+        }
+
+        $data = Helper::removeDangerMultiple($request->all());
+
+        $sendOtp = $this->pendingLogin->requestLogin($data);
+
+        if($sendOtp === true){
+            return $this->success('OTP Send', '');
+        }else{
+            return $this->failure($sendOtp);
+        }
+
+        return $this->failure('Something Wrong');
+        
+    }
+
+    /**
+     * RongoBuy Check OTP
+     * 
+     * @OA\Post(
+     *     path="/api/auth/v1/check-otp",
+     *     tags={"Auth"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success"
+     *     ),
+    * @OA\RequestBody(
+    *    required=true,
+    *    description="Check OTP",
+    *    @OA\JsonContent(
+    *       required={"mobile", "otp"},
+    *       @OA\Property(property="mobile", type="string", example="01767000000"),
+    *       @OA\Property(property="otp", type="string", example="111111"),
+    *    ),
+    * ),
+     *   
+     *     
+     * )
+     */
+    public function checkOtp(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'mobile' => 'required',
+            'otp'    => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->failure(Helper::VALIDATOR_FAIL_MESSAGE, Helper::validateErrorMsg($validator->errors()));
+        }
+
+        $data = Helper::removeDangerMultiple($request->all());
+
+        $checkOtp = $this->pendingLogin->checkOtp($data);
+
+        if($checkOtp === false){
+            return $this->failure("Wrong OTP", 401);
+        }
+
+        // get user id
+        $userId = $this->user->userIdByMobile($checkOtp->mobile);
+
+        if($checkOtp != null){
+            return $this->loginUsingId($userId, $checkOtp->id);
+        }
+
+        return $checkOtp; //$this->failure("Wrong OTP", 401);
+    }
+
+    /** @OA\Info(title="RongoBuy ecommerce", version="1.0") */
+
+    
     public function login()
     {
         $credentials = request(['mobile', 'password']);
@@ -72,44 +149,12 @@ class AuthController extends Controller
         return $this->success('success', $this->respondWithToken($token));
     }
 
-    /**
-     * RongoBuy Registration
-     * 
-     * @OA\Post(
-     *     path="/api/auth/v1/registration",
-     *     tags={"Auth"},
-     *     @OA\Response(
-     *         response=201,
-     *         description="success"
-     *     ),
-    * @OA\RequestBody(
-    *    required=true,
-    *    description="Pass user credentials",
-    *    @OA\JsonContent(
-    *       required={"email","password"},
-    *       @OA\Property(property="name", type="string", example="name"),
-    *       @OA\Property(property="mobile", type="string", example="01767000000"),
-    *       @OA\Property(property="password", type="string", format="password", example="12345678"),
-    *       @OA\Property(property="type", type="string", @OA\Schema(
-     *             type="array",
-     *             default="customer",
-     *             @OA\Items(
-     *                 type="string",
-     *                 enum = {"customer", "vendor", "admin"},
-     *             )
-     *         )),
-    *    ),
-    * ),
-     *   
-     *     
-     * )
-     */
+    
     public function reg(Request $request)
     {   
         $validator = Validator::make($request->all(),[
             'name' => 'required',
-            'mobile' => 'required | unique:users',
-            'password' => 'required'
+            'mobile' => 'required | unique:users'
         ]);
 
         if($validator->fails()){
@@ -123,7 +168,6 @@ class AuthController extends Controller
         }
 
         $data = Helper::removeDangerMultiple($request->all());
-
         $final = $this->user->reg($data);
  
         if($final){
@@ -136,6 +180,19 @@ class AuthController extends Controller
             } 
         }
         
+    }
+
+    private function loginUsingId($id, $pendingId){
+
+        if (! $token = auth()->tokenById($id)) {
+            return $this->failure("Wrong OTP", 401);
+        }
+
+        // delte pending user
+        $this->pendingLogin->deletePending($pendingId);
+
+        return $this->success('success', $this->respondWithToken($token));
+
     }
 
     /**
