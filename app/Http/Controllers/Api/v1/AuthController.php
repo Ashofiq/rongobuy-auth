@@ -150,28 +150,11 @@ class AuthController extends Controller
     }
 
     
-    public function reg(Request $request)
+    public function reg($data)
     {   
-        $validator = Validator::make($request->all(),[
-            'name' => 'required',
-            'mobile' => 'required | unique:users'
-        ]);
-
-        if($validator->fails()){
-            return $this->failure(Helper::VALIDATOR_FAIL_MESSAGE, Helper::validateErrorMsg($validator->errors()));
-        }
-
-        // check user valid type
-        $type_array = array(null, User::ADMIN, User::CUSTOMER);
-        if(!array_search($request->type, $type_array)){
-            return $this->failure('Type not match, please enter valid type');
-        }
-
-        $data = Helper::removeDangerMultiple($request->all());
         $final = $this->user->reg($data);
  
         if($final){
-            $createUserType = $this->createUserType($final->id, $request->type);
 
             if($createUserType){
                 return $this->success('success', $final);
@@ -188,7 +171,7 @@ class AuthController extends Controller
             return $this->failure("Wrong OTP", 401);
         }
 
-        // delte pending user
+        // delete pending user
         $this->pendingLogin->deletePending($pendingId);
 
         return $this->success('success', $this->respondWithToken($token));

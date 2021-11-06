@@ -66,9 +66,9 @@ class User extends Authenticatable implements JWTSubject
     public function reg($data)
     {   
         $user = new User();
-        $user->name = $data->name;
+        $user->name = null;
         $user->mobile = $data->mobile;
-        $user->password = Helper::makeHash($data->password);
+        $user->password = null;
 
         if($user->save()){
             return $user;
@@ -118,6 +118,11 @@ class User extends Authenticatable implements JWTSubject
         $user = static::where('mobile', $mobile)->first();
 
         if($user != null){
+            return $user->id;
+        }else{
+            $user = new User();
+            $user->mobile = $mobile;
+            $user->save();
             return $user->id;
         }
 
