@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\User\UserInterface;
 use App\Repositories\User\UserTypes\UserTypeInterface;
 use App\Repositories\PendingLogin\PendingLoginInterface;
+use App\Repositories\SMSGateWay\SMSGateWayInterface;
 use App\Models\UserTypes\UserTypes;
 use App\Helper\RespondsWithHttpStatus;
 use Helper;
@@ -22,14 +23,15 @@ class AuthController extends Controller
 {   
     use RespondsWithHttpStatus;
     private $user;
-    private $userType, $pendingLogin;
+    private $userType, $pendingLogin, $sms;
     /**
      * Create a new AuthController instance.
      *
      * @return void
      */
-    public function __construct(UserInterface $user, UserTypeInterface $userType, PendingLoginInterface $pendingLogin)
+    public function __construct(SMSGateWayInterface $sms, UserInterface $user, UserTypeInterface $userType, PendingLoginInterface $pendingLogin)
     {   
+        $this->sms = $sms;
         $this->user = $user;
         $this->userType = $userType;
         $this->pendingLogin = $pendingLogin;
@@ -60,7 +62,7 @@ class AuthController extends Controller
      * )
      */
     public function sendOtp(Request $request){
-
+        return $this->sms->send('e', 'e');
         $validator = Validator::make($request->all(),[
             'mobile' => 'required'
         ]);
@@ -70,7 +72,7 @@ class AuthController extends Controller
         }
 
         $data = Helper::removeDangerMultiple($request->all());
-
+        // $data = 
         $sendOtp = $this->pendingLogin->requestLogin($data);
 
         if($sendOtp === true){

@@ -54,6 +54,11 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'SMS_BASE_URL' => env('SMS_BASE_URL', 'https://http.myvfirst.com/smpp/api/sendsms'),
+    'smskey' => 'o',
+    'smsKeyGenTime' => '',
+    'SMSAuthorization' => env('SMSAuthorization', 'cm9uZ29idXlodHBpbnQ6M29ec0lwQFJ5UiVc'),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*
@@ -177,7 +182,8 @@ return [
         L5Swagger\L5SwaggerServiceProvider::class,
         App\Repositories\User\UserRepoServiceProvide::class,
         App\Repositories\User\UserTypes\UserTypeRepoServiceProvide::class,
-        App\Repositories\PendingLogin\PendingLoginServiceProvider::class
+        App\Repositories\PendingLogin\PendingLoginServiceProvider::class,
+        App\Repositories\SMSGateWay\SMSGateWayRepoServiceProvider::class
     ],
 
     /*
